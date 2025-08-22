@@ -9,6 +9,7 @@ namespace ModuloApi.Controllers
     [Route("[controller]")]
     public class ContatoController : ControllerBase
     {
+        private readonly AgendaContext _context;
         public ContatoController(AgendaContext context)
         {
             _context = context;
@@ -20,7 +21,7 @@ namespace ModuloApi.Controllers
         {
             _context.Add(contato);
             _context.SaveChanges();
-            return OK(contato);
+            return CreatedAtAction(nameof(ObterPorId), new {id = contato.Id}, contato);
         }
 
 
@@ -36,7 +37,7 @@ namespace ModuloApi.Controllers
         }
 
         [HttpGet("ObterPorNome")]
-        public IActionResult ObterPorId(nome id)
+        public IActionResult ObterPorId(string nome)
         {
             var contatos = _context.Contatos.Where(x => x.Nome.Contains(nome));
             return Ok(contatos);
@@ -44,11 +45,11 @@ namespace ModuloApi.Controllers
 
 
         [HttpPut("{id}")]
-        public IActionResult Atualizar(int id, ContatoController contato)
+        public IActionResult Atualizar(int id, Contato contato)
         {
             var contatoBanco = _context.Contatos.Find(id);
 
-            if (contato == null)
+            if (contatoBanco == null)
                 return NotFound();
 
             contatoBanco.Nome = contato.Nome;
@@ -66,7 +67,7 @@ namespace ModuloApi.Controllers
         {
             var contatoBanco = _context.Contatos.Find(id);
 
-            if (contato == null)
+            if (contatoBanco == null)
                 return NotFound();
 
             _context.Contatos.Remove(contatoBanco);
